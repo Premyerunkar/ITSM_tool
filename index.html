@@ -29,8 +29,8 @@
         .hidden { display: none !important; }
 
         /* Login Screen */
-        #login-view { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, var(--primary-color), #1e3a8a); position: absolute; top: 0; left: 0; z-index: 2000; }
-        .login-card { background: white; padding: 40px; border-radius: 10px; width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); text-align: center; }
+        #login-view { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, var(--primary-color), #1e3a8a); position: absolute; top: 0; left: 0; z-index: 2000; padding: 20px; }
+        .login-card { background: white; padding: 40px; border-radius: 10px; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); text-align: center; }
         .login-card h2 { margin-bottom: 10px; color: var(--primary-color); }
         .login-card p { color: var(--text-muted); margin-bottom: 30px; font-size: 14px; }
         .demo-logins { display: flex; flex-direction: column; gap: 15px; }
@@ -42,16 +42,24 @@
 
         /* Main App Layout */
         #app-view { width: 100vw; height: 100vh; display: flex; }
-        .sidebar { width: 260px; background-color: var(--primary-color); color: white; display: flex; flex-direction: column; }
-        .logo-area { padding: 25px 20px; font-size: 20px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
+        .sidebar { width: 260px; background-color: var(--primary-color); color: white; display: flex; flex-direction: column; transition: left 0.3s ease; z-index: 1000; }
+        .logo-area { padding: 25px 20px; font-size: 20px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; justify-content: space-between; }
         .logo-area i { color: var(--secondary-color); }
+        
+        /* Mobile Sidebar Close Button */
+        .close-sidebar { display: none; background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+
         .nav-links { list-style: none; padding: 20px 0; flex-grow: 1; }
         .nav-links li { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #cbd5e1; font-weight: 500; transition: 0.2s; }
         .nav-links li:hover { background-color: rgba(255,255,255,0.05); color: white; }
         .nav-links li.active { background-color: var(--secondary-color); color: white; border-left: 4px solid var(--accent-color); }
 
         .main-wrapper { flex-grow: 1; display: flex; flex-direction: column; width: calc(100% - 260px); }
+        
         .top-bar { height: 70px; background: var(--surface-color); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; }
+        .top-bar-left { display: flex; align-items: center; gap: 15px; }
+        .menu-toggle { display: none; font-size: 24px; color: var(--primary-color); cursor: pointer; background: none; border: none; }
+        
         .user-profile { display: flex; align-items: center; gap: 15px; font-weight: bold; }
         .btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
         .btn-logout:hover { background: var(--danger); color: white; }
@@ -68,7 +76,7 @@
 
         /* Incidents */
         .incident-header-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn-primary { background: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-primary { background: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; white-space: nowrap; }
         .btn-primary:hover { background: #2563eb; }
         
         .incident-layout { display: flex; gap: 20px; height: calc(100vh - 180px); }
@@ -78,15 +86,13 @@
         .ticket-item { padding: 20px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
         .ticket-item:hover { background-color: #f1f5f9; }
         .ticket-item.active { background-color: #eff6ff; border-left: 4px solid var(--secondary-color); }
-        .ticket-header { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center; }
+        .ticket-header { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center; flex-wrap: wrap; gap: 10px;}
         
         /* Badges */
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; text-transform: uppercase; }
-        /* Priorities */
         .priority-high { color: var(--danger); font-weight: bold; }
         .priority-medium { color: var(--warning); font-weight: bold; }
         .priority-low { color: var(--success); font-weight: bold; }
-        /* Status Badges */
         .status-open { background: var(--purple); }
         .status-picked_up { background: var(--info); }
         .status-pending { background: var(--warning); }
@@ -94,9 +100,9 @@
         .status-resolved { background: var(--success); }
 
         /* Modal Form Grid */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 2000; padding: 15px; }
         .modal.active { display: flex; }
-        .modal-content { background: white; padding: 30px; border-radius: 10px; width: 600px; }
+        .modal-content { background: white; padding: 30px; border-radius: 10px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .form-group { margin-bottom: 15px; }
         .form-group.full-width { grid-column: span 2; }
@@ -105,9 +111,56 @@
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
         .btn-cancel { background: #e2e8f0; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         
-        /* Admin Status Select */
-        .status-select { padding: 8px 15px; border-radius: 6px; border: 2px solid var(--border-color); font-weight: bold; font-size: 14px; cursor: pointer; outline: none; }
+        .status-select { padding: 8px 15px; border-radius: 6px; border: 2px solid var(--border-color); font-weight: bold; font-size: 14px; cursor: pointer; outline: none; width: 100%; max-width: 200px;}
         .status-select:focus { border-color: var(--secondary-color); }
+
+        /* Overlay for Mobile Sidebar */
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 900; }
+        .sidebar-overlay.active { display: block; }
+
+
+        /* =========================================
+           RESPONSIVE MEDIA QUERIES
+           ========================================= */
+
+        /* Tablets (Max Width: 1024px) */
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+            
+            /* Stack the incident view vertically */
+            .incident-layout { flex-direction: column; height: auto; }
+            .incident-list { min-height: 250px; max-height: 300px; }
+            .incident-detail { min-height: 400px; flex: none; }
+        }
+
+        /* Mobile Phones (Max Width: 768px) */
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            
+            /* Sidebar becomes a slide-out drawer */
+            .sidebar { position: fixed; left: -260px; height: 100vh; }
+            .sidebar.active { left: 0; }
+            .close-sidebar { display: block; }
+            
+            /* Main wrapper takes full width */
+            .main-wrapper { width: 100%; }
+            .menu-toggle { display: block; }
+            .top-bar { padding: 0 15px; }
+            .content-area { padding: 15px; }
+            
+            /* Adjust Headers */
+            .incident-header-controls { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn-primary { width: 100%; }
+            
+            /* Modal Form to single column */
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            .modal-content { padding: 20px; }
+            
+            /* Detail pane adjustments */
+            .incident-detail > div:first-child { flex-direction: column; gap: 15px; }
+            .status-select { max-width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -118,15 +171,21 @@
             <h2>Khetan Group</h2>
             <p>IT Service Management Portal</p>
             <div class="demo-logins">
-                <button class="btn-login btn-admin" onclick="performLogin('admin')"><i class="fas fa-user-shield"></i> Login as Admin (Prem)</button>
+                <button class="btn-login btn-admin" onclick="performLogin('admin')"><i class="fas fa-user-shield"></i> Login as Admin</button>
                 <button class="btn-login btn-user" onclick="performLogin('user')"><i class="fas fa-user-graduate"></i> Login as Employee</button>
             </div>
         </div>
     </div>
 
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
     <div id="app-view" class="hidden">
-        <nav class="sidebar">
-            <div class="logo-area"><i class="fas fa-laptop-code"></i> Khetan Group ITSM</div>
+        
+        <nav class="sidebar" id="sidebar">
+            <div class="logo-area">
+                <div><i class="fas fa-laptop-code"></i> Khetan ITSM</div>
+                <button class="close-sidebar" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+            </div>
             <ul class="nav-links">
                 <li id="nav-dashboard" onclick="switchModule('dashboard', this)"><i class="fas fa-chart-pie"></i> System Dashboard</li>
                 <li id="nav-incidents" onclick="switchModule('incidents', this)"><i class="fas fa-ticket-alt"></i> <span id="incident-nav-text">All Incidents</span></li>
@@ -135,9 +194,12 @@
 
         <div class="main-wrapper">
             <header class="top-bar">
-                <h2 id="portal-title">Admin Portal</h2>
+                <div class="top-bar-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <h2 id="portal-title" style="font-size: 1.2rem;">Admin Portal</h2>
+                </div>
                 <div class="user-profile">
-                    <span id="current-user-name">Prem</span>
+                    <span id="current-user-name" style="display: none;">Prem</span>
                     <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
             </header>
@@ -151,7 +213,7 @@
                             <div class="stat-number" id="dash-open" style="color: var(--purple);">0</div>
                         </div>
                         <div class="card">
-                            <h3 style="color: var(--text-muted); font-size: 16px;">Currently Working (Picked Up)</h3>
+                            <h3 style="color: var(--text-muted); font-size: 16px;">Currently Working</h3>
                             <div class="stat-number" id="dash-working" style="color: var(--info);">0</div>
                         </div>
                         <div class="card">
@@ -170,7 +232,7 @@
                     <div class="incident-layout">
                         <div class="incident-list" id="ticket-list-container"></div>
                         <div class="incident-detail" id="ticket-detail-container">
-                            <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-muted);">
+                            <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-muted); padding: 40px 0;">
                                 <i class="fas fa-hand-pointer" style="font-size: 40px; margin-bottom: 15px; color: #cbd5e1;"></i>
                                 <h3>Select an incident</h3>
                             </div>
@@ -234,37 +296,47 @@
         let currentUserRole = null; 
         let activeTicketId = null;
 
-        // Expanded Database Array
-        let tickets = [
-           // { id: 'INC-1001', title: 'Monitor is not working', priority: 'high', status: 'open', employeeName: 'Rahul Kumar', dept: 'Java Full Stack Lab', desc: 'Cannot run javac commands in the lab.' },
-           // { id: 'INC-1002', title: 'Windows tool license expired', priority: 'medium', status: 'picked_up', employeeName: 'Anita Sharma', dept: 'Software Testing Lab', desc: 'Selenium nodes failing to authenticate.' },
-          //  { id: 'INC-1003', title: 'Projector screen stuck', priority: 'low', status: 'cannot_fix', employeeName: 'Amit Patel', dept: 'Faculty / Admin', desc: 'The motor on the projector screen in Room 2 is completely burnt out. Needs hardware replacement.' }
-        ];
+        let tickets = []; // Start empty
 
-        // Helper to format status text for UI
         const statusMap = {
             'open': 'Open / New',
             'picked_up': 'Ticket Picked Up',
-            'pending': 'Pending Information',
-            'cannot_fix': 'Cannot be fixed',
+            'pending': 'Pending Info',
+            'cannot_fix': 'Cannot Fix',
             'resolved': 'Resolved'
         };
+
+        // --- MOBILE SIDEBAR LOGIC ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // Auto-close sidebar on mobile when a link is clicked
+        function closeSidebarOnMobile() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('sidebarOverlay').classList.remove('active');
+            }
+        }
 
         function performLogin(role) {
             currentUserRole = role;
             
             if (role === 'admin') {
                 document.getElementById('portal-title').innerText = 'Admin Portal';
-                document.getElementById('current-user-name').innerText = 'Prem (Admin)';
+                document.getElementById('current-user-name').innerText = 'Admin';
                 document.getElementById('nav-dashboard').classList.remove('hidden');
                 document.getElementById('incident-nav-text').innerText = 'All Tickets Queue';
                 document.getElementById('incident-page-title').innerText = 'All Support Tickets';
                 switchModule('dashboard', document.getElementById('nav-dashboard'));
             } else {
                 document.getElementById('portal-title').innerText = 'Employee Portal';
-                document.getElementById('current-user-name').innerText = 'Standard User';
+                document.getElementById('current-user-name').innerText = 'Employee';
                 document.getElementById('nav-dashboard').classList.add('hidden');
-                document.getElementById('incident-nav-text').innerText = 'My Created Tickets';
+                document.getElementById('incident-nav-text').innerText = 'My Tickets';
                 document.getElementById('incident-page-title').innerText = 'My Support Tickets';
                 switchModule('incidents', document.getElementById('nav-incidents'));
             }
@@ -276,7 +348,7 @@
             if (role === 'admin') updateDashboard();
             
             document.getElementById('ticket-detail-container').innerHTML = `
-                <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-muted);">
+                <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-muted); padding: 40px 0;">
                     <i class="fas fa-hand-pointer" style="font-size: 40px; margin-bottom: 15px; color: #cbd5e1;"></i>
                     <h3>Select an incident</h3>
                 </div>`;
@@ -286,6 +358,7 @@
             currentUserRole = null;
             document.getElementById('app-view').classList.add('hidden');
             document.getElementById('login-view').classList.remove('hidden');
+            closeSidebarOnMobile();
         }
 
         function switchModule(moduleId, clickedElement) {
@@ -293,6 +366,7 @@
             clickedElement.classList.add('active');
             document.querySelectorAll('.module').forEach(mod => mod.classList.remove('active'));
             document.getElementById(moduleId).classList.add('active');
+            closeSidebarOnMobile(); // Hide menu on mobile after selection
         }
 
         function renderTicketList() {
@@ -328,11 +402,10 @@
             const ticket = tickets.find(t => t.id === id);
             const detailContainer = document.getElementById('ticket-detail-container');
             
-            // Admin gets a dropdown to change status. User gets a static badge.
             let statusControl = '';
             if (currentUserRole === 'admin') {
                 statusControl = `
-                    <div style="text-align: right;">
+                    <div style="text-align: left; width: 100%;">
                         <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px;">Update Status:</label>
                         <select class="status-select" onchange="changeTicketStatus('${ticket.id}', this.value)">
                             <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>Open / New</option>
@@ -349,34 +422,34 @@
 
             detailContainer.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
-                    <div>
+                    <div style="flex-grow: 1; margin-right: 15px;">
                         <h2 style="margin-bottom: 5px; color: var(--primary-color);">${ticket.id}</h2>
-                        <h3 style="color: var(--text-main);">${ticket.title}</h3>
+                        <h3 style="color: var(--text-main); font-size: 18px;">${ticket.title}</h3>
                     </div>
-                    ${statusControl}
+                    <div>${currentUserRole !== 'admin' ? statusControl : ''}</div>
                 </div>
+                
+                ${currentUserRole === 'admin' ? `<div style="margin-bottom: 20px;">${statusControl}</div>` : ''}
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); background: #f1f5f9; padding: 15px; border-radius: 8px;">
-                    <p><strong>Priority:</strong> <span class="priority-${ticket.priority}" style="text-transform: capitalize;">${ticket.priority}</span></p>
-                    <p><strong>Department:</strong> ${ticket.dept}</p>
-                    <p><strong>Requested By:</strong> ${ticket.employeeName}</p>
+                    <p style="grid-column: span 2;"><strong>Priority:</strong> <span class="priority-${ticket.priority}" style="text-transform: capitalize;">${ticket.priority}</span></p>
+                    <p><strong>Department:</strong><br>${ticket.dept}</p>
+                    <p><strong>Requested By:</strong><br>${ticket.employeeName}</p>
                 </div>
                 
-                <div style="background: var(--bg-color); padding: 25px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="background: var(--bg-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
                     <h4 style="margin-bottom: 10px; color: var(--primary-color);">Issue Description</h4>
-                    <p style="line-height: 1.6;">${ticket.desc}</p>
+                    <p style="line-height: 1.6; font-size: 14px;">${ticket.desc}</p>
                 </div>
             `;
         }
 
-        // Triggered when Admin changes the dropdown
         function changeTicketStatus(id, newStatus) {
             const ticketIndex = tickets.findIndex(t => t.id === id);
             if(ticketIndex > -1) {
                 tickets[ticketIndex].status = newStatus;
-                renderTicketList(); // Update the list badge
-                if(currentUserRole === 'admin') updateDashboard(); // Update top counters
-                // We don't need to call viewTicket again because the dropdown is already showing the correct value
+                renderTicketList(); 
+                if(currentUserRole === 'admin') updateDashboard(); 
             }
         }
 
@@ -420,4 +493,3 @@
     </script>
 </body>
 </html>
-
