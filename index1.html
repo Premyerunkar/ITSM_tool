@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bytecrack ITSM Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #3b82f6;
+            --accent-color: #f59e0b;
+            --bg-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* --- Sidebar Navigation --- */
+        .sidebar { width: 260px; background-color: var(--primary-color); color: white; display: flex; flex-direction: column; }
+        .logo-area { padding: 25px 20px; font-size: 22px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
+        .logo-area i { color: var(--secondary-color); }
+        .nav-links { list-style: none; padding: 20px 0; flex-grow: 1; }
+        .nav-links li { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #cbd5e1; font-weight: 500; transition: 0.2s; }
+        .nav-links li:hover { background-color: rgba(255,255,255,0.05); color: white; }
+        .nav-links li.active { background-color: var(--secondary-color); color: white; border-left: 4px solid var(--accent-color); }
+
+        /* --- Main Content Area --- */
+        .main-wrapper { flex-grow: 1; display: flex; flex-direction: column; width: calc(100% - 260px); }
+        .top-bar { height: 70px; background: var(--surface-color); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; }
+        .user-profile { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        .avatar { width: 35px; height: 35px; background: var(--secondary-color); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        
+        .content-area { padding: 30px; overflow-y: auto; flex-grow: 1; }
+        .module { display: none; }
+        .module.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Dashboard Module --- */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+        .card { background: var(--surface-color); padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .stat-number { font-size: 38px; font-weight: bold; margin: 10px 0; }
+
+        /* --- Incidents Module --- */
+        .incident-header-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn-primary { background: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-success { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-success:hover { background: #059669; }
+        
+        .incident-layout { display: flex; gap: 20px; height: calc(100vh - 180px); }
+        .incident-list { flex: 1; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 10px; overflow-y: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .incident-detail { flex: 2; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 10px; padding: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); overflow-y: auto; }
+        
+        .ticket-item { padding: 20px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
+        .ticket-item:hover { background-color: #f1f5f9; }
+        .ticket-item.active { background-color: #eff6ff; border-left: 4px solid var(--secondary-color); }
+        .ticket-header { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge.high { background: var(--danger); }
+        .badge.medium { background: var(--warning); }
+        .badge.low { background: var(--success); }
+        .badge.resolved { background: var(--text-muted); }
+
+        /* --- Modal Form --- */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 10px; width: 450px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--secondary-color); }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+        .btn-cancel { background: #e2e8f0; color: var(--text-main); border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-cancel:hover { background: #cbd5e1; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo-area">
+            <i class="fas fa-laptop-code"></i>
+            Bytecrack ITSM
+        </div>
+        <ul class="nav-links">
+            <li class="active" onclick="switchModule('dashboard', this)"><i class="fas fa-chart-pie"></i> Dashboard</li>
+            <li onclick="switchModule('incidents', this)"><i class="fas fa-ticket-alt"></i> Incidents</li>
+        </ul>
+    </nav>
+
+    <div class="main-wrapper">
+        <header class="top-bar">
+            <h2>IT Service Desk</h2>
+            <div class="user-profile">
+                <div class="avatar">P</div>
+                <span>Prem (Admin)</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            
+            <section id="dashboard" class="module active">
+                <h2 style="margin-bottom: 20px;">System Overview</h2>
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3 style="color: var(--text-muted); font-size: 16px;">Total Open Tickets</h3>
+                        <div class="stat-number" id="dash-open" style="color: var(--secondary-color);">0</div>
+                    </div>
+                    <div class="card">
+                        <h3 style="color: var(--text-muted); font-size: 16px;">High Priority Issues</h3>
+                        <div class="stat-number" id="dash-high" style="color: var(--danger);">0</div>
+                    </div>
+                    <div class="card">
+                        <h3 style="color: var(--text-muted); font-size: 16px;">Resolved Tickets</h3>
+                        <div class="stat-number" id="dash-resolved" style="color: var(--success);">0</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="incidents" class="module">
+                <div class="incident-header-controls">
+                    <h2>Incident Management</h2>
+                    <button class="btn-primary" onclick="openModal()"><i class="fas fa-plus"></i> New Ticket</button>
+                </div>
+                
+                <div class="incident-layout">
+                    <div class="incident-list" id="ticket-list-container">
+                        </div>
+
+                    <div class="incident-detail" id="ticket-detail-container">
+                        <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-muted);">
+                            <i class="fas fa-hand-pointer" style="font-size: 40px; margin-bottom: 15px; color: #cbd5e1;"></i>
+                            <h3>Select an incident from the list</h3>
+                            <p>Click on any ticket on the left to view its details here.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <div class="modal" id="ticketModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Create New Support Ticket</h3>
+            <form id="ticketForm" onsubmit="handleCreateTicket(event)">
+                <div class="form-group">
+                    <label>Issue Title</label>
+                    <input type="text" id="t-title" required placeholder="e.g., Selenium Grid not responding">
+                </div>
+                <div class="form-group">
+                    <label>Priority Level</label>
+                    <select id="t-priority">
+                        <option value="low">Low (Standard Request)</option>
+                        <option value="medium">Medium (Partial Disruption)</option>
+                        <option value="high">High (System Outage)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Detailed Description</label>
+                    <textarea id="t-desc" rows="5" required placeholder="Describe the error, steps to reproduce, etc..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Submit Ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Array acting as our database
+        let tickets = [
+            { 
+                id: 'INC-1001', 
+                title: 'Java JDK path variable missing in Lab 2', 
+                priority: 'high', 
+                status: 'open', 
+                desc: 'Students taking the full-stack course are unable to run javac commands on the machines in Lab 2. The environment variables need to be globally reconfigured.' 
+            },
+            { 
+                id: 'INC-1002', 
+                title: 'Software testing tool license expired', 
+                priority: 'medium', 
+                status: 'open', 
+                desc: 'The automated testing suite is throwing an authentication error because the SSL certificate for our testing nodes has expired.' 
+            },
+            { 
+                id: 'INC-1003', 
+                title: 'Upload new course syllabus PDF', 
+                priority: 'low', 
+                status: 'resolved', 
+                desc: 'The revised software testing syllabus needs to be uploaded to the main student portal backend.' 
+            }
+        ];
+
+        let activeTicketId = null;
+
+        // 1. Initialize the app
+        function initApp() {
+            renderTicketList();
+            updateDashboard();
+        }
+
+        // 2. Switch between Dashboard and Incidents
+        function switchModule(moduleId, clickedElement) {
+            // Update sidebar highlights
+            document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
+            clickedElement.classList.add('active');
+            
+            // Hide all modules, show selected
+            document.querySelectorAll('.module').forEach(mod => mod.classList.remove('active'));
+            document.getElementById(moduleId).classList.add('active');
+        }
+
+        // 3. Render the left-hand list of tickets
+        function renderTicketList() {
+            const listContainer = document.getElementById('ticket-list-container');
+            listContainer.innerHTML = ''; // Clear out the old list
+
+            tickets.forEach(ticket => {
+                const isActive = ticket.id === activeTicketId ? 'active' : '';
+                const badgeClass = ticket.status === 'resolved' ? 'resolved' : ticket.priority;
+                const statusLabel = ticket.status === 'resolved' ? 'Resolved' : ticket.priority;
+                
+                // Construct the HTML for each ticket
+                const ticketHTML = `
+                    <div class="ticket-item ${isActive}" onclick="viewTicket('${ticket.id}')">
+                        <div class="ticket-header">
+                            <strong style="color: var(--primary-color);">${ticket.id}</strong>
+                            <span class="badge ${badgeClass}">${statusLabel}</span>
+                        </div>
+                        <p style="font-size: 14px; font-weight: 500;">${ticket.title}</p>
+                    </div>
+                `;
+                listContainer.insertAdjacentHTML('beforeend', ticketHTML);
+            });
+        }
+
+        // 4. View a specific ticket's details on the right pane
+        function viewTicket(id) {
+            activeTicketId = id;
+            renderTicketList(); // Re-render to show the blue highlight on the active ticket
+
+            const ticket = tickets.find(t => t.id === id);
+            const detailContainer = document.getElementById('ticket-detail-container');
+            
+            // Generate the action button (Resolve button if open, text if resolved)
+            let actionButton = '';
+            if (ticket.status === 'open') {
+                actionButton = `<button class="btn-success" onclick="resolveTicket('${ticket.id}')"><i class="fas fa-check"></i> Mark as Resolved</button>`;
+            } else {
+                actionButton = `<strong style="color: var(--success); font-size: 16px;"><i class="fas fa-check-circle"></i> Ticket Resolved</strong>`;
+            }
+
+            // Inject the ticket details into the right pane
+            detailContainer.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
+                    <div>
+                        <h2 style="margin-bottom: 10px; color: var(--primary-color);">${ticket.id}</h2>
+                        <h3>${ticket.title}</h3>
+                    </div>
+                    ${actionButton}
+                </div>
+                
+                <div style="display: flex; gap: 30px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+                    <p><strong>Priority:</strong> <span style="text-transform: capitalize; color: var(--text-muted);">${ticket.priority}</span></p>
+                    <p><strong>Current Status:</strong> <span style="text-transform: capitalize; color: var(--text-muted);">${ticket.status}</span></p>
+                </div>
+                
+                <div style="background: var(--bg-color); padding: 25px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <h4 style="margin-bottom: 10px; color: var(--primary-color);">Issue Description</h4>
+                    <p style="line-height: 1.6;">${ticket.desc}</p>
+                </div>
+            `;
+        }
+
+        // 5. Handle the creation of a new ticket
+        function handleCreateTicket(event) {
+            event.preventDefault(); // Stop page from refreshing
+            
+            // Generate a new ID based on array length
+            const newId = 'INC-' + (1000 + tickets.length + 1);
+            
+            const newTicket = {
+                id: newId,
+                title: document.getElementById('t-title').value,
+                priority: document.getElementById('t-priority').value,
+                desc: document.getElementById('t-desc').value,
+                status: 'open'
+            };
+
+            tickets.unshift(newTicket); // Add the new ticket to the top of the list
+            
+            closeModal(); // Hide the form
+            document.getElementById('ticketForm').reset(); // Clear form inputs
+            
+            renderTicketList(); // Update the UI list
+            updateDashboard(); // Update the top numbers
+            
+            // Important: Automatically simulate a click on the new ticket so the boss sees it open immediately!
+            viewTicket(newId); 
+        }
+
+        // 6. Change a ticket status to resolved
+        function resolveTicket(id) {
+            const ticketIndex = tickets.findIndex(t => t.id === id);
+            if(ticketIndex > -1) {
+                tickets[ticketIndex].status = 'resolved';
+                viewTicket(id); // Refresh detail view to show green checkmark
+                updateDashboard(); // Update the dashboard counters
+            }
+        }
+
+        // 7. Calculate numbers for the Dashboard
+        function updateDashboard() {
+            const openTickets = tickets.filter(t => t.status === 'open').length;
+            const highTickets = tickets.filter(t => t.status === 'open' && t.priority === 'high').length;
+            const resolvedTickets = tickets.filter(t => t.status === 'resolved').length;
+
+            document.getElementById('dash-open').innerText = openTickets;
+            document.getElementById('dash-high').innerText = highTickets;
+            document.getElementById('dash-resolved').innerText = resolvedTickets;
+        }
+
+        // 8. Modal Open/Close Controls
+        function openModal() { document.getElementById('ticketModal').classList.add('active'); }
+        function closeModal() { document.getElementById('ticketModal').classList.remove('active'); }
+
+        // Boot up the application
+        initApp();
+    </script>
+</body>
+</html>
