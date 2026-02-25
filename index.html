@@ -292,18 +292,24 @@
     let currentUser = null;
 
     // --- Login Simulation ---
-    function performLogin(role) {
-        currentUser = { name: role === "admin" ? "Admin User" : "Employee User", role: role };
-        document.getElementById("current-user-name").textContent = currentUser.name;
-        loginView.classList.add("hidden");
-        appView.classList.remove("hidden");
-        if (role === "user") {
-            document.getElementById("portal-title").textContent = "Employee Portal";
-            document.getElementById("incident-nav-text").textContent = "My Incidents";
-        }
-        switchModule("dashboard");
-        loadTickets();
+  function performLogin(role) {
+    currentUser = { name: role === "admin" ? "Admin User" : "Employee User", role: role };
+    document.getElementById("current-user-name").textContent = currentUser.name;
+    document.getElementById("login-view").classList.add("hidden");
+    document.getElementById("app-view").classList.remove("hidden");
+
+    if(role === "admin") {
+        document.getElementById("portal-title").textContent = "Admin Portal";
+        document.getElementById("incident-nav-text").textContent = "All Tickets Queue";
+        switchModule("dashboard", document.getElementById("nav-dashboard"));
+    } else {
+        document.getElementById("portal-title").textContent = "Employee Portal";
+        document.getElementById("incident-nav-text").textContent = "My Tickets";
+        switchModule("incidents", document.getElementById("nav-incidents"));
     }
+
+    loadTickets(); // fetch tickets from Supabase after login
+}
 
     function logout() {
         currentUser = null;
@@ -420,6 +426,8 @@
         document.getElementById("ticketForm").reset();
         alert("Ticket submitted successfully!");
     }
+   
 </script>
 </body>
 </html>
+
